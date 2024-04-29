@@ -9,15 +9,28 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    result = None
+    closest_urls = None
     if request.method == 'POST':
         url = request.form['url']
-        result = process_url(url)
-    return render_template('index.html', result=result)
+        closest_urls = process_url(url)
+    return render_template('index.html',
+                           closest_urls=closest_urls)
 
 
 def process_url(url):
-    return "Result for URL: " + url
+    parser = WebsiteParser(url)
+    embedding = openai_client.embeddings.create(
+                    input=[str(parser.text_contents)],
+                    model="text-embedding-ada-002"
+                ).data[0].embedding
+
+    collection = chroma_client.get_collection(name="VC-homepages")
+
+    closest_urls = collection.query(
+        query_embeddings=[embedding],
+        n_results=2
+    )
+    return closest_urls
 
 
 if __name__ == '__main__':

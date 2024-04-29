@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Venture capital similarity app</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
-<body>
-    <h1>Venture capital similarity app</h1>
+<body style="margin:50px">
+    <h1>Venture capital evaluator</h1>
     <hr>
     <h2>Enter the VC website URL:</h2>
     <form action="/#" method="post">
@@ -15,11 +18,17 @@
         <button type="submit">Submit</button>
     </form>
 
-    {% if result %}
+    {% if closest_urls %}
     <div>
-        <h3>Result:</h3>
-        <p>{{ result }}</p>
+        <p>{{ closest_urls['ids'] }}</p>
+        <p>{{ closest_urls['distances'] }}</p>
     </div>
+<!--    {% for id in closest_urls %}-->
+<!--    <div>-->
+<!--&lt;!&ndash;        <h3>url:</h3>&ndash;&gt;-->
+<!--        <p>{{ closes }}</p>-->
+<!--    </div>-->
+<!--    {% endfor %}-->
     {% endif %}
 </body>
 </html>

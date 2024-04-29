@@ -12,7 +12,7 @@ handler.setLevel(logging.DEBUG)
 
 class WebsiteParser:
 
-    def __init__(self, url):
+    def __init__(self, url, parse_hyperlinks=False):
         self.url = url.rstrip('/')
         self.raw_contents = ''
         self.text_contents = ''
@@ -27,8 +27,9 @@ class WebsiteParser:
         self.logger.info(f'WebsiteParser instance has been created for {self.url}')
 
         self._preprocess_website(url, in_homepage=True)
-        for hyperlink in self.hyperlinks:
-            self._preprocess_website(hyperlink)
+        if parse_hyperlinks:
+            for hyperlink in self.hyperlinks:
+                self._preprocess_website(hyperlink)
 
         self.logger.info('')
 

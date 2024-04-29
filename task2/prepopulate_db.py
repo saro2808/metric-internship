@@ -2,9 +2,9 @@ from client import openai_client, chroma_client
 from website_parser import WebsiteParser
 
 urls = [
-    # "https://www.accel.com/",
-    # 'https://a16z.com/',
-    # 'https://greylock.com/',
+    "https://www.accel.com/",
+    'https://a16z.com/',
+    'https://greylock.com/',
     'http://www.benchmark.com/'
 ]
 
