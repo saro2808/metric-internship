@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venture capital similarity app</title>
+</head>
+<body>
+    <h1>Venture capital similarity app</h1>
+    <hr>
+    <h2>Enter the VC website URL:</h2>
+    <form action="/#" method="post">
+        <label for="url">URL:</label>
+        <input type="url" id="url" name="url" required>
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if result %}
+    <div>
+        <h3>Result:</h3>
+        <p>{{ result }}</p>
+    </div>
+    {% endif %}
+</body>
+</html>
