@@ -7,28 +7,61 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <style>
+        .info {
+            border: 2px solid #333; /* Border style */
+            border-radius: 10px; /* Rounded corners */
+            padding: 10px; /* Add some padding for content */
+            width: fit-content; /* Adjust the width to fit content */
+        }
+    </style>
 </head>
 <body style="margin:50px">
     <h1>Venture capital evaluator</h1>
     <hr>
-    <h2>Enter the VC website URL:</h2>
     <form action="/#" method="post">
-        <label for="url">URL:</label>
+        <label for="url">Enter the VC website URL:</label>
         <input type="url" id="url" name="url" required>
         <button type="submit">Submit</button>
     </form>
-
     {% if closest_urls %}
     <div>
-        <p>{{ closest_urls['ids'] }}</p>
-        <p>{{ closest_urls['distances'] }}</p>
+        <h4>Requested website:</h4>
+        <div class="info">
+            <div><b>url</b>: <a href="{{ url }}">{{ url }}</a></div>
+            {% for key, value in diagnosis.items() %}
+            <div><b>{{ key }}</b>: {{ value }}</div>
+            {% endfor %}
+        </div>
     </div>
-<!--    {% for id in closest_urls %}-->
-<!--    <div>-->
-<!--&lt;!&ndash;        <h3>url:</h3>&ndash;&gt;-->
-<!--        <p>{{ closes }}</p>-->
-<!--    </div>-->
-<!--    {% endfor %}-->
+    <br>
+    <div>
+        <h4>Closest matches</h4>
+        <ol>
+        {% for _ in closest_urls['ids'][0] %}
+            <li>
+                <div class="info">
+                    <div>
+                        <b>url</b>: <a href="{{ closest_urls['ids'][0][loop.index0] }}">
+                            {{ closest_urls['ids'][0][loop.index0] }}
+                        </a>
+                    </div>
+                    {% set info = diagnoses[loop.index0] %}
+                    {% for key, value in info.items() %}
+                    <div>
+                        <b>{{ key }}</b>: {{ value }}
+                    </div>
+                    {% endfor %}
+                    <div>
+                        <b>distance</b>: {{ closest_urls['distances'][0][loop.index0] }}
+                    </div>
+                </div>
+                <br>
+            </li>
+        {% endfor %}
+        </ol>
+    </div>
     {% endif %}
 </body>
 </html>
