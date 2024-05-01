@@ -68,7 +68,7 @@ Build the docker image by specifying your OpenAI API key:
   ```sh
   docker build --build-arg OPENAI_API_KEY=$OPENAI_API_KEY -t vc-similarity-app .
   ```
-* in Windows
+* in Windows PowerShell
   ```bat
   docker build --build-arg OPENAI_API_KEY=$Env:OPENAI_API_KEY -t vc-similarity-app .
   ```
