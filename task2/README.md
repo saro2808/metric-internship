@@ -47,11 +47,11 @@ python3 -m venv venv
 ```
 To activate the virtual environment run
 * in Linux and MacOS
-  ```
+  ```sh
   source venv/bin/activate
   ```
 * in Windows PowerShell
-  ```
+  ```bat
   venv\Scripts\activate
   ```
 
@@ -65,11 +65,11 @@ After this you can run the app either in docker or locally.
 
 Build the docker image by specifying your OpenAI API key:
 * in Linux and MacOS
-  ```
+  ```sh
   docker build --build-arg OPENAI_API_KEY=$OPENAI_API_KEY -t vc-similarity-app .
   ```
 * in Windows
-  ```
+  ```bat
   docker build --build-arg OPENAI_API_KEY=$Env:OPENAI_API_KEY -t vc-similarity-app .
   ```
 
@@ -83,13 +83,23 @@ To stop the app run `docker ps` to find out the container id and then run `docke
 
 ### Running locally
 
+Remove the directory `chroma_data` if it exists:
+```
+rm -r chroma_data
+```
+
+Populate the database:
+```
+python prepopulate.py
+```
+
 Define the flask app:
 * in Linux and MasOS
-  ```
+  ```sh
   export FLASK_APP=VC-similarity-app.py
   ```
 * in Windows PowerShell
-  ```
+  ```bat
   $Env:FLASK_APP = "VC-similarity-app.py"
 
 Run the app:
