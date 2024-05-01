@@ -26,15 +26,19 @@
         <button type="submit">Submit</button>
     </form>
     {% if closest_urls %}
+    {% if url %}
     <div>
         <h4>Requested website:</h4>
         <div class="info">
             <div><b>url</b>: <a href="{{ url }}">{{ url }}</a></div>
+            {% if diagnosis %}
             {% for key, value in diagnosis.items() %}
             <div><b>{{ key }}</b>: {{ value }}</div>
             {% endfor %}
+            {% endif %}
         </div>
     </div>
+    {% endif %}
     <br>
     <div>
         <h4>Closest matches</h4>
@@ -48,11 +52,13 @@
                         </a>
                     </div>
                     {% set info = diagnoses[loop.index0] %}
+                    {% if info %}
                     {% for key, value in info.items() %}
                     <div>
                         <b>{{ key }}</b>: {{ value }}
                     </div>
                     {% endfor %}
+                    {% endif %}
                     <div>
                         <b>distance</b>: {{ closest_urls['distances'][0][loop.index0] }}
                     </div>
