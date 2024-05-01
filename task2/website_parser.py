@@ -16,12 +16,19 @@ handler.setLevel(logging.DEBUG)
 
 
 def trim_url(url: str) -> str:
+    
     url_split = url.split('/')
     if url_split[-1] == '':
         return '/'.join(url_split[:-1])
+    
     hash_i = url_split[-1].find('#')
     if hash_i != -1:
         url_split[-1] = url_split[-1][:hash_i]
+    
+    quest_i = url_split[-1].find('?')
+    if quest_i != -1:
+        url_split[-1] = url_split[1][:quest_i]
+
     return '/'.join(url_split)
 
 

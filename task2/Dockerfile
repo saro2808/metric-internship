@@ -11,6 +11,7 @@ COPY . .
 
 RUN if [ -d chroma_data ]; then rm -rf chroma_data; fi
 
+ARG OPENAI_API_KEY
 ENV OPENAI_API_KEY=${OPENAI_API_KEY}
 
 RUN python prepopulate_db.py

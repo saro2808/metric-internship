@@ -3,13 +3,13 @@ from website_parser import WebsiteParser
 
 urls = [
     'http://www.benchmark.com/',
+    'http://www.lsvp.com/',
     "https://www.accel.com/",
     'https://a16z.com/',
     'https://greylock.com/',
     'http://www.sequoiacap.com/',
     'http://www.indexventures.com/',
     'http://www.kpcb.com/',
-    'http://www.lsvp.com/',
     'http://www.matrixpartners.com/',
     'http://www.500.co/',
     'http://www.sparkcapital.com/',
