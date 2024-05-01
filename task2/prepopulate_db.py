@@ -2,28 +2,41 @@ from client import chroma_client
 from website_parser import WebsiteParser
 
 urls = [
+    'http://www.benchmark.com/',
     "https://www.accel.com/",
-    'http://www.500.co/',
     'https://a16z.com/',
     'https://greylock.com/',
-    'http://www.benchmark.com/'
+    'http://www.sequoiacap.com/',
+    'http://www.indexventures.com/',
+    'http://www.kpcb.com/',
+    'http://www.lsvp.com/',
+    'http://www.matrixpartners.com/',
+    'http://www.500.co/',
+    'http://www.sparkcapital.com/',
+    'http://www.insightpartners.com/'
 ]
 
 metadatas = []
 embeddings = []
 text_contents = []
+
+parsed_urls_count = 0
+
 for url in urls:
     parser = WebsiteParser(url, parse_hyperlinks=True)
 
     embeddings.append(
-        parser.get_embeddings()
+        parser.get_embedding()
     )
     text_contents.append(
         parser.get_text_repr()
     )
     metadatas.append(
-        parser.get_diagnosis()
+        {'diagnosis': parser.get_diagnosis()}
     )
+
+    parsed_urls_count += 1
+    print(f'Parsed {parsed_urls_count} out of {len(urls)}\n')
 
 collection = chroma_client.create_collection(name="VC-homepages")
 

@@ -1,11 +1,13 @@
 import sys
 import logging
 import json
+from typing import List, Tuple, Dict, Union, Optional, Any
 
 import requests
 from bs4 import BeautifulSoup
 import openai
 import tiktoken
+from json2html import json2html
 
 from models import gpt_model, embed_model, models
 
@@ -13,7 +15,7 @@ handler = logging.StreamHandler(stream=sys.stdout)
 handler.setLevel(logging.DEBUG)
 
 
-def trim_url(url):
+def trim_url(url: str) -> str:
     url_split = url.split('/')
     if url_split[-1] == '':
         return '/'.join(url_split[:-1])
@@ -23,7 +25,7 @@ def trim_url(url):
     return '/'.join(url_split)
 
 
-def parse_error(err):
+def parse_error(err) -> Tuple[str, str]:
     error_message = err.message if hasattr(err, 'message') else str(err)
     error_info = error_message.split(" - ")[1]
     error_details = eval(error_info)['error']
@@ -33,17 +35,18 @@ def parse_error(err):
 
 
 class WebPage:
+    """A single webpage."""
 
-    def __init__(self, url, logger):
+    def __init__(self, url: str, logger: logging.Logger):
         self.url = trim_url(url)
         self.raw_contents = None
         self._text_contents = None
 
         self._logger = logger
 
-        self._preprocess_webpage()
+        self._fetch_webpage()
 
-    def _preprocess_webpage(self):
+    def _fetch_webpage(self) -> None:
 
         self._logger.info('Processing ' + self.url)
 
@@ -73,7 +76,13 @@ class WebPage:
         except requests.exceptions.RequestException as e:
             self._logger.error(f'Error while requesting {self.url}: {e}')
 
-    def get_text_repr(self, keep_coeff=1):
+    def get_text_repr(self, keep_coeff: float = 1) -> str:
+        """
+        Represents the webpage as text by keeping only the specified part.
+
+        :param keep_coeff: Number in the interval (0, 1]. Specifies the part of the text to keep.
+        :returns: The text representation.
+        """
         def _cut(text):
             return text[:int(len(text) * keep_coeff)]
 
@@ -83,25 +92,34 @@ class WebPage:
 
 
 class WebsiteParser:
+    """
+    Website parser.
 
-    def __init__(self, url, parse_hyperlinks=False):
+    :ivar homepage: Represents the website's homepage.
+    :type homepage: WebPage
+    :ivar subpages: Webpages reachable from homepage via a hyperlink.
+    :type subpages: List[WebPage]
+    """
+
+    def __init__(self, url: str, parse_hyperlinks: bool = False):
 
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.setLevel(logging.DEBUG)
         self._logger.addHandler(handler)
 
-        self._parse_hyperlinks = parse_hyperlinks
         self.homepage = WebPage(url, self._logger)
-        self.subpages = []  # will hold webpages of hyperlinks
+        self.subpages: List[WebPage] = []  # will hold webpages of hyperlinks
+        self._parse_hyperlinks = parse_hyperlinks
 
-        self._logger.info(f'WebsiteParser instance has been created for {url}')
+        self._logger.info(f'WebsiteParser instance created for {url}')
 
         if parse_hyperlinks:
-            self._preprocess_hyperlinks()
+            self._parse_subpages()
         else:
             self._logger.info('Not parsing hyperlinks')
 
-    def _preprocess_hyperlinks(self):
+    def _parse_subpages(self) -> None:
+        """Fetches subpages one hyperlink apart from the homepage."""
         hyperlinks = []
         anchors = self.homepage.raw_contents.find_all('a', href=True)
         for anchor in anchors:
@@ -123,8 +141,15 @@ class WebsiteParser:
             subpage = WebPage(hyperlink, self._logger)
             self.subpages.append(subpage)
 
-    def get_text_repr(self, keep_coeff=1, model=None):
+    def get_text_repr(self, keep_coeff: float = 1, model: Optional[str] = None) -> Tuple[float, str]:
+        """
+        Represents the website as text by concatenating the text representations of its pages.
 
+        keep_coeff is calculated depending on the model's max token limit.
+        :param keep_coeff: Number in the interval (0, 1]. Specifies the part of the text to keep.
+        :param model: The model name.
+        :return:
+        """
         if model:
             enc = tiktoken.encoding_for_model(model)
             _, text_repr = self.get_text_repr()
@@ -145,9 +170,10 @@ class WebsiteParser:
 
         return keep_coeff, text_repr
 
-    def _evoke_model(self, model):
-        keep_coeff, text_repr_cut = self.get_text_repr(model=model)
+    def _evoke_model(self, model: str) -> Union[Optional[str], List[float]]:
+        """Loops until the model responds without errors."""
 
+        keep_coeff, text_repr_cut = self.get_text_repr(model=model)
         while True:
             if model == gpt_model:
                 args = f'''Below is the text part of a website.
@@ -172,21 +198,27 @@ class WebsiteParser:
                 _, text_repr_cut = self.get_text_repr(keep_coeff=keep_coeff)
                 self._logger.info(f'Retrying with keep_coeff={keep_coeff}...')
 
-    def get_diagnosis(self):
-
+    def get_diagnosis(self) -> str:
+        """
+        Summarizes website info.
+        :return: The diagnosis of the website in JSON format
+        """
         self._logger.info('Waiting for openai to extract website info...')
 
         while True:
-            stream = self._evoke_model(gpt_model)
+            diagnosis = self._evoke_model(gpt_model)
             try:
-                message_json = json.loads(stream.choices[0].message.content)
-                message_dict = {key: str(message_json[key]) for key in message_json}
-                self._logger.info('')
-                return message_dict
+                diagnosis_json = json.loads(diagnosis)
+                return json2html.convert(json=diagnosis_json)
+
             except json.decoder.JSONDecodeError as e:
                 self._logger.error(f'Exception while converting response to json: {e}')
                 self._logger.info('Retrying...')
 
-    def get_embeddings(self):
+    def get_embedding(self) -> List[float]:
+        """
+        Embeds the website.
+        :return: The embedding.
+        """
         self._logger.info('Embedding website...')
         return self._evoke_model(embed_model)

@@ -16,7 +16,7 @@ def gpt_func(prompt):
     return openai_client.chat.completions.create(
         model=gpt_model,
         messages=[{"role": "user", "content": prompt}]
-    )
+    ).choices[0].message.content
 
 
 def embed_func(text):
