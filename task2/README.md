@@ -57,7 +57,7 @@ To activate the virtual environment run
 
 Note that you will need an OpenAI API key to run the app.
 If you don't have one then you can create it [here](https://platform.openai.com/api-keys).
-Once you have one set the `OPENAI_API_KEY` environment variable in the command line.
+Once you have the key set the `OPENAI_API_KEY` environment variable.
 
 After this you can run the app either in docker or locally.
 
