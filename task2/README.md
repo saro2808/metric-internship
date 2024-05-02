@@ -41,7 +41,7 @@ Then only the actual Flask application can operate. For a given VC website URL t
 
 ## Run the application
 
-Clone this repository. Navigate to its root. Make a virtual environment:
+Clone this repository. Navigate to the rootof this project, i.e. `task2`. Make a virtual environment:
 ```
 python3 -m venv venv
 ```
