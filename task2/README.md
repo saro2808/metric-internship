@@ -83,6 +83,11 @@ To stop the app run `docker ps` to find out the container id and then run `docke
 
 ### Running locally
 
+Install the requirements:
+```
+pip install -r requirements.txt
+```
+
 Remove the directory `chroma_data` if it exists:
 ```
 rm -r chroma_data
