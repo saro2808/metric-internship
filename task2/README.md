@@ -29,7 +29,7 @@ Example VC websites that you can populate the database initially to compute the 
 ## Solution
 
 We are using the following frameworks:
-* Flask - for wraping the backend in a web interface;
+* Flask - for wrapping the backend in a web interface;
 * Chroma DB - as vector database;
 * OpenAI API - for the AI part; particularly `gpt-3.5-turbo` model is used for information extraction and `text-embedding-ada-002` for embedding texts.
 
