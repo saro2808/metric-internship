@@ -112,8 +112,3 @@ Run the app:
 ```
 flask run
 ```
-
-## TODO
-
-1. Make `raw_contents` attribute of `WebPage` private and add a method to get hyperlinks.
-2. Define max token counts as separate variables to get rid of magic constants.

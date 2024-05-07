@@ -1,7 +1,7 @@
 import sys
 import logging
 import json
-from typing import List, Tuple, Dict, Union, Optional, Any
+from typing import List, Tuple, Union, Optional
 
 import requests
 from bs4 import BeautifulSoup
@@ -46,7 +46,7 @@ class WebPage:
 
     def __init__(self, url: str, logger: logging.Logger):
         self.url = trim_url(url)
-        self.raw_contents = None
+        self._raw_contents = None
         self._text_contents = None
 
         self._logger = logger
@@ -68,13 +68,13 @@ class WebPage:
             response = requests.get(self.url, headers=headers)
 
             if response.status_code == 200:
-                self.raw_contents = BeautifulSoup(response.content, 'html.parser')
+                self._raw_contents = BeautifulSoup(response.content, 'html.parser')
 
                 # clear empty lines
                 def _is_empty(line):
                     return len(line) == 0 or line.isspace()
 
-                lines = self.raw_contents.get_text().split('\n')
+                lines = self._raw_contents.get_text().split('\n')
                 self._text_contents = '\n'.join([line for line in lines if not _is_empty(line)])
 
             else:
@@ -82,6 +82,30 @@ class WebPage:
 
         except requests.exceptions.RequestException as e:
             self._logger.error(f'Error while requesting {self.url}: {e}')
+
+    def get_hyperlinks(self) -> List[str]:
+        """
+        Returns the relevant hyperlinks in the webpage.
+        :returns: list of hyperlinks
+        """
+        hyperlinks = []
+        anchors = self._raw_contents.find_all('a', href=True)
+        for anchor in anchors:
+            # collect only hyperlinks with sheer text
+            if not anchor.find_all(recursive=False):
+                anchor_url = anchor['href']
+                if anchor_url[:4] != 'http':
+                    anchor_url = self.url + anchor_url
+                hyperlinks.append(trim_url(anchor_url))
+
+        # remove duplicates
+        hyperlink_set = set(hyperlinks)
+        hyperlink_set.discard(self.url)
+        hyperlinks = list(hyperlink_set)
+
+        self._logger.info(f'Found {len(hyperlinks)} hyperlinks')
+
+        return hyperlinks
 
     def get_text_repr(self, keep_coeff: float = 1) -> str:
         """
@@ -127,23 +151,7 @@ class WebsiteParser:
 
     def _parse_subpages(self) -> None:
         """Fetches subpages one hyperlink apart from the homepage."""
-        hyperlinks = []
-        anchors = self.homepage.raw_contents.find_all('a', href=True)
-        for anchor in anchors:
-            # collect only hyperlinks with sheer text
-            if not anchor.find_all(recursive=False):
-                anchor_url = anchor['href']
-                if anchor_url[:4] != 'http':
-                    anchor_url = self.homepage.url + anchor_url
-                hyperlinks.append(trim_url(anchor_url))
-
-        # remove duplicates
-        hyperlink_set = set(hyperlinks)
-        hyperlink_set.discard(self.homepage.url)
-        hyperlinks = list(hyperlink_set)
-
-        self._logger.info(f'Found {len(hyperlinks)} hyperlinks')
-
+        hyperlinks = self.homepage.get_hyperlinks()
         for hyperlink in hyperlinks:
             subpage = WebPage(hyperlink, self._logger)
             self.subpages.append(subpage)
