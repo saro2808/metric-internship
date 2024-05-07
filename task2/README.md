@@ -21,10 +21,11 @@ Technical Requirements:
 * Submit GitHub URL with your codebase. If the app is deployed in the cloud, submit the app URL as well.
 
 Example VC websites that you can populate the database initially to compute the similarity:
-| www.accel.com | www.a16z.com | www.greylock.com | www.benchmark.com |
-| ------------- | ------------ | ---------------- | ----------------- |
-| www.sequoiacap.com | www.indexventures.com | www.kpcb.com | www.lsvp.com |
-| www.matrixpartners.com | www.500.co | www.sparkcapital.com | www.insightpartners.com |
+
+| www.accel.com      | www.a16z.com        | www.greylock.com   | www.benchmark.com   |
+| :----------------- | :------------------ | :----------------- | :------------------ |
+| www.sequoiacap.com | www.indexventures.com | www.kpcb.com     | www.lsvp.com        |
+| www.matrixpartners.com | www.500.co       | www.sparkcapital.com | www.insightpartners.com |
 
 ## Solution
 
